@@ -1,0 +1,18 @@
+{
+  "name": "hana-gateway-local-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Outbound-only agent that connects to the HANA Gateway MCP server on Render and serves HANA (ODBC) queries and SAP B1 Service Layer requests.",
+  "scripts": {
+    "start": "node agent.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "undici": "^6.19.8",
+    "ws": "^8.18.0"
+  },
+  "optionalDependencies": {
+    "odbc": "^2.4.9"
+  }
+}

@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: hana-gateway-mcp-server
+    env: node
+    plan: free
+    rootDir: render-mcp-server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: CONNECTOR_TOKENS
+        sync: false
+      - key: MCP_ACCESS_TOKEN
+        sync: false

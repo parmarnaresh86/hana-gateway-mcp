@@ -1,0 +1,5 @@
+node_modules/
+.env
+*.log
+connector.pid
+ADD_TO_RENDER.txt
