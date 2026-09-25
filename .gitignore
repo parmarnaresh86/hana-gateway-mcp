@@ -3,3 +3,6 @@ node_modules/
 *.log
 connector.pid
 ADD_TO_RENDER.txt
+
+# build bundle — contains a real .env and node_modules
+*.zip
