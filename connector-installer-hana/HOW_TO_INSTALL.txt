@@ -1,0 +1,85 @@
+HANA Gateway Connector - Installation
+
+1. Copy this whole folder to the new PC/server (USB drive, network share,
+   email zip - any way you like). The PC must be able to reach the HANA
+   server and/or SAP B1 Service Layer, and reach the internet on port 443.
+
+2. Make sure these are installed on that PC:
+   - Node.js LTS            https://nodejs.org
+   - SAP HANA ODBC driver   (HDBODBC - comes with the SAP HANA Client)
+     Only needed if this connector will run HANA SQL queries.
+
+3. Double-click install.bat inside this folder.
+
+4. It will ask you for:
+   - Connector ID: a unique name for this PC (e.g. wms-dev-uk)
+   - HANA host, port, username, password, tenant database
+     (press Enter at "HANA host" to skip HANA)
+   - Service Layer URL, company DB, username, password, and whether it
+     uses a self-signed certificate
+     (press Enter at "Service Layer base URL" to skip Service Layer)
+
+   Avoid the characters  &  ^  %  !  <  >  |  in passwords typed here -
+   Windows batch files can mangle them. If a password contains them, fix
+   it afterwards in the .env file with Notepad, then run
+   service-restart.bat.
+
+   It generates a secure Connector Token automatically - you don't need
+   to create one yourself.
+
+5. When the questions are done, Notepad opens ADD_TO_RENDER.txt with a
+   line like:
+
+     wms-dev-uk:9e4dfaa738440da848d081d41f9e8262c82f17392db5f8baa9ccace95d7f70a2
+
+6. Add that line in the Render dashboard (or send it to whoever manages it):
+   Render dashboard -> hana-gateway-mcp-server -> Environment ->
+   CONNECTOR_TOKENS -> append a comma then that line -> Save.
+
+   Use hana-gateway-mcp-server, NOT sql-gateway-mcp-server.
+   The connector will not come online until this step is done.
+
+7. The installer then asks how it should run:
+
+     1 = Background process only - simple, but you must double-click
+         start.bat again yourself after every reboot or logoff.
+     2 = Windows auto-start service (Recommended) - installs the free
+         "pm2" process manager and registers it to relaunch the
+         connector automatically every time the PC starts. Needs
+         internet access once (to install pm2), and may ask you to
+         re-run install.bat "as administrator".
+
+   Press Enter to accept the default (option 2).
+
+8a. If you chose option 1 (background process):
+   - Check status:   open agent.log in this folder
+   - Stop it:        double-click stop.bat
+   - Start it again: double-click start.bat
+
+8b. If you chose option 2 (auto-start service):
+   - Check status / recent logs:  double-click service-status.bat
+   - Stop it (until next reboot):  double-click service-stop.bat
+   - Restart it:                   double-click service-restart.bat
+   - Remove auto-start entirely:   double-click service-uninstall.bat
+
+9. Check it is online: open
+     https://hana-gateway-mcp-server.onrender.com/healthz
+   Your Connector ID should appear in the "connectors" list.
+
+To change settings later, edit .env in this folder and restart the
+connector. To start over from scratch, delete .env and run install.bat
+again (this generates a NEW token, so update Render too).
+
+
+Connecting ChatGPT / Claude to this connector
+---------------------------------------------
+Use the hana-gateway-mcp-server URL with its access key:
+
+     https://hana-gateway-mcp-server.onrender.com/mcp?key=<MCP_ACCESS_TOKEN>
+
+Then ask things like:
+   - "List connectors" -> confirms this PC's Connector ID is online
+   - "Using connector <your-connector-id>, show the top 5 rows from OCRD"
+
+HANA queries are read-only (SELECT/WITH only) and Service Layer queries are
+GET-only - the connector itself blocks any write, whatever is asked.
